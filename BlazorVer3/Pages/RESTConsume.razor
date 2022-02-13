@@ -1,0 +1,42 @@
+﻿@page "/RESTConsume"
+@using System.Globalization
+
+
+
+<h3>RESTConsume</h3>
+
+<p>Rodzaj algorytmu hashującego:</p>
+<label><input type="radio" name="food" value="SHA256" @onchange="@(() => OnChange("SHA256"))" checked="checked">SHA256</label>
+<label><input type="radio" name="food" value="SHA512" @onchange="@(() => OnChange("SHA512"))">SHA512</label>
+<label><input type="radio" name="food" value="MD5" @onchange="@(() => OnChange("MD5"))">MD5</label>
+
+<input id="CardIdToFInd" type ="Text" placeholder="Value to hash" @bind-value="@valueToHash" /><br />
+
+<p role="status">Hash result: @resultHash</p>
+<button onclick="@generateHash">Add Card</button>
+
+
+
+
+@code {
+    private static readonly HttpClient client = new HttpClient();
+    string resultHash = "";
+    string hashType = "";
+    string valueToHash = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        hashType = "SHA256";
+    }
+
+
+    public void generateHash()
+    {
+        resultHash = client.GetStringAsync(String.Format("https://localhost:7106/Hash/GetHash{0}?valueToHash={1}", hashType, valueToHash)).Result;
+    }
+
+    public void OnChange(string value)
+    {
+        hashType = value;
+    }
+}

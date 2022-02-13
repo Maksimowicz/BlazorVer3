@@ -1,0 +1,181 @@
+﻿@page "/CardsDB"
+<h3>CardsDB</h3>
+
+<h2>Add card (SOAP)</h2>
+<p hidden="@addCardFailed" style="color:red;">Card Id already exists!</p>
+<input id="CardId" type ="Text" placeholder="Card Id" @bind-value="@cardId" /><br />
+<input id="CardName" type ="Text" placeholder="Card name" @bind-value="@cardName" /><br />
+<input id="Cmc" type ="Text" placeholder="CMC" @bind-value="@cmc" /><br />
+<input id="Type" type = "Text" placeholder="Type" @bind-value="@type"/><br />
+<input id="SubTypes" type = "Text" placeholder="Subtypes" @bind-value="@subType"/><br />
+<input id="Power" type = "number" placeholder="Power" @bind-value="@power"/><br />
+<input id="Toughness" type = "number" placeholder="Toughness" @bind-value="@toughness"/><br />
+<input id="CardText" type = "Text" placeholder="Card text" @bind-value="@cardText"/><br />
+<input id="Rarity" type = "Text" placeholder="Rarity" @bind-value="@rarity"/><br />
+
+<button onclick="@addCard">Add Card</button>
+<br />
+<br />
+
+<h2>Remove card (SOAP)</h2>
+<p hidden="@deleteCardFailed" style="color:red;">Card Id not exists!</p>
+<input id="CardIDDelete" type ="Text" placeholder="Card Id to delete" @bind-value="@cardIdDelete" /><br />
+
+<button onclick="@deleteCard">Remove card</button>
+<br />
+<br />
+
+<h2>Find card (SOAP)</h2>
+<input id="CardIdToFInd" type ="Text" placeholder="Find card Id" @bind-value="@cardId_ToFind" /><br />
+<br />
+<p role="status">Card Id: @cardId_Find</p>
+<p role="status">Card name: @cardName_Find</p>
+<p role="status">Cmc: @cmc_Find</p>
+<p role="status">Type: @type_Find</p>
+<p role="status">Subtypes: @subType_Find</p>
+<p role="status">Power: @power_Find</p>
+<p role="status">Toughness: @toughness_Find</p>
+<p role="status">Card text: @cardText_Find</p>
+<p role="status">Rarity: @rarity_Find</p>
+
+<button onclick="@findCard">Find card</button>
+<br />
+<br />
+
+@code {
+    string cardId = "";
+    string cardName = "";
+    string cmc = "";
+    string type = "";
+    string subType = "";
+    int power = 0;
+    int toughness = 0;
+    string cardText = "";
+    string rarity = "";
+
+    string cardIdDelete = "";
+
+
+    string cardId_ToFind = "";
+    string cardId_Find = "";
+    string cardName_Find = "";
+    string cmc_Find = "";
+    string type_Find = "";
+    string subType_Find = "";
+    int? power_Find = 0;
+    int? toughness_Find = 0;
+    string cardText_Find = "";
+    string rarity_Find = "";
+
+
+
+
+    bool addCardFailed = true;
+    bool deleteCardFailed = true;
+
+
+
+
+    CardsDBSvc.SOAPTestSoapClient client;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var endpointConfiguration = new CardsDBSvc.SOAPTestSoapClient.EndpointConfiguration();
+
+        client = new CardsDBSvc.SOAPTestSoapClient(endpointConfiguration);
+
+        // var a = client.HelloWorldAsync().Result;
+    }   
+
+
+    public void addCard()
+    {
+        bool result = false;
+        CardsDBSvc.AddCardToDatabaseResponse response = client.AddCardToDatabaseAsync(cardId, cardName, cmc, type, subType, power, toughness, cardText, rarity).Result;
+
+        if (response != null)
+        {
+            result = response.Body.AddCardToDatabaseResult;
+
+            if(result)
+            {
+                cardId = "SUCCESS";
+                cardName = "";
+                cmc = "";
+                type = "";
+                subType = "";
+                power = 0;
+                toughness = 0;
+                cardText = "";
+                rarity = "";
+            }
+        }
+
+        addCardFailed = result;
+    }
+
+    public void deleteCard()
+    {
+        bool result = false;
+        CardsDBSvc.DeleteCardResponse response = client.DeleteCardAsync(cardIdDelete).Result;
+
+        if (response != null)
+        {
+            result = response.Body.DeleteCardResult;
+        }
+
+        deleteCardFailed = result;
+    }
+
+    public void findCard()
+    {
+        bool result = false;
+        CardsDBSvc.FindCardResponse response = client.FindCardAsync(cardId_ToFind).Result;
+
+
+
+        if (response != null)
+        {
+            string responseStr = response.Body.FindCardResult.cardId;
+            if (responseStr == null)
+            {
+                cardId_Find = "NOT FOUND";
+                cardName_Find = "-";
+                cmc_Find = "-";
+                type_Find = "-";
+                subType_Find = "-";
+                power_Find = 0;
+                toughness_Find = 0;
+                cardText_Find = "-";
+                rarity_Find = "-";
+            }
+            else
+            {               
+                cardId_Find = response.Body.FindCardResult.cardId;
+                cardName_Find = response.Body.FindCardResult.cardName;
+                cmc_Find = response.Body.FindCardResult.cmc;
+                type_Find = response.Body.FindCardResult.type;
+                subType_Find = response.Body.FindCardResult.subTypes;
+                power_Find = response.Body.FindCardResult.powerValue;
+                toughness_Find = response.Body.FindCardResult.toughness;
+                cardText_Find = response.Body.FindCardResult.cardText;
+                rarity_Find = response.Body.FindCardResult.rarity;
+            }
+        }
+        else
+        {
+            cardId_Find = "NO RESPONSE";
+            cardName_Find = "-";
+            cmc_Find = "-";
+            type_Find = "-";
+            subType_Find = "-";
+            power_Find = 0;
+            toughness_Find = 0;
+            cardText_Find = "-";
+            rarity_Find = "-";
+
+        }
+
+    }
+
+}

@@ -1,0 +1,111 @@
+﻿@page "/YouTube"
+@using BlazorVer3.PagesControllers.YouTube
+@using Google.Apis.YouTube.v3;
+@using Google.Apis.YouTube.v3.Data;
+
+<h3>YoutubeAPI</h3>
+
+
+
+    @foreach (Video element in videoList)
+    {
+    int i = 0;
+    <p>
+            <button class="btn btn-primary" @onclick="() => getAndShowComments(element.Id)">Get comments</button>
+            <br/>
+            <iframe width="560" height="315" src="@String.Format(ytEmbed, element.Id);" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            
+            TAGS: 
+
+            @if(element.Snippet.Tags != null)
+            {
+                @foreach(string tag in element.Snippet.Tags)
+                {
+                    <text>@tag || </text>
+                    
+                }
+            }
+            else
+            {
+                <text>NO TAGS</text>
+            }
+
+            <p id=@element.Id>Comments: @comments[i++]</p>
+          
+        </p>
+    }
+
+
+
+@code {
+    int i = 0;
+    YoutubeController youtubeController;
+    IList<Video> videoList;
+    string[] comments;
+
+    readonly string ytEmbed = "https://www.youtube.com/embed/{0}";
+
+    Boolean run = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        youtubeController = new YoutubeController();
+        videoList = youtubeController.getMostViewed().Items;
+        comments = new string[videoList.Count];
+        Video ww = null;
+
+
+
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+
+
+            run = true;
+        }
+    }
+
+    protected void getAndShowComments(string id)
+    {
+        CommentThreadListResponse commentListResponse = youtubeController.getYTComments(id);
+        IList<CommentThread> commentsList = commentListResponse.Items;
+
+
+
+        int idx = -1;
+
+        for(int i = 0; i < videoList.Count; i++)
+        {
+            if(videoList[i].Id == id)
+            {
+                idx = i;
+                break;
+            }
+        }
+
+
+        if(idx == -1)
+        {
+            return;
+        }
+
+        string commentLine = "";
+
+        for(int i = 0; i < 5; i++)
+        {
+            Comment commmentInner = commentsList[i].Snippet.TopLevelComment;
+            commentLine = String.Format("Autor: {0} || Date: {1} Comment: {2} |||| ", commmentInner.Snippet.AuthorDisplayName, commmentInner.Snippet.PublishedAt, commmentInner.Snippet.TextOriginal);
+
+            comments[idx] += commentLine;
+        }
+        //Comment comment = null;
+        //comment.Snippet.PublishedAt;
+        //comment.Snippet.AuthorDisplayName;
+        //comment.Snippet.TextOriginal;
+    }
+}

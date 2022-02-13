@@ -1,0 +1,60 @@
+﻿@page "/AddGoogleMapPin"
+@using BlazorVer3.Models
+@inject IJSRuntime JSRuntime
+
+<h3>Add Google map pin</h3>
+ <p hidden="@HideLabel" style="color:red;">Pin already exsists!</p>
+
+<input id="PinName" type ="Text" placeholder="Pin name" @bind-value="@pinName" />
+<input id="Lat" type ="number" placeholder="Latitude" @bind-value="@lat" />
+<input id="Lng" type ="number" placeholder="Longitude" @bind-value="@lng" />
+<input id="description" type = "Text" placeholder="Description" @bind-value="@description"/>
+
+<br/>
+
+<button onclick="@onClick">Add</button>
+<button onclick="@clear">Clear</button>
+@code {
+    GoogleMapsController googleMapsController;
+
+    string pinName = "";
+    double lat = 0;
+    double lng = 0;
+    string description = "";
+    string decodedPin = "";
+
+
+    Boolean HideLabel = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            googleMapsController = new GoogleMapsController(JSRuntime);
+        }
+
+    }
+
+
+    public void onClick()
+    {
+        HideLabel = googleMapsController.InsertNewPin(pinName, lat, lng, description);  
+    }
+
+    public void clear()
+    {
+        pinName = "";
+        lat = 0;
+        lng = 0;
+        description = "";
+    }
+
+    public void decodePin()
+    {
+        Task<string> decodeTask = googleMapsController.GetDecodedPin(lat, lng);
+
+        decodeTask.Wait();
+
+        decodedPin = decodeTask.Result;
+    }
+}

@@ -1,0 +1,33 @@
+﻿@page "/GoogleMaps"
+@using BlazorVer3.Models
+@inject IJSRuntime JSRuntime
+
+<h3>GoogleMaps</h3>
+
+<button class="btn btn-primary" @onclick="GenerateMarksDB">Show DB markers</button>
+
+
+<h1>Display Google Map</h1>
+    <div id="@mapId" style="height:500px;width:100%;">
+</div>
+
+@code {
+    string mapId = "Map";
+    GoogleMapsController googleMapsController;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //Initialize controller
+        googleMapsController = new GoogleMapsController(JSRuntime);
+
+        if (firstRender)
+        {
+            googleMapsController.GenerateMap(mapId);
+        }
+    }
+
+    private async void GenerateMarksDB()
+    {
+        googleMapsController.GetMarkerList(mapId);
+    }
+}
