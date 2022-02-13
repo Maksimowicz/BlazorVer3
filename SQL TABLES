@@ -1,0 +1,50 @@
+USE [PAI_DB]
+GO
+
+/****** Object:  Table [dbo].[GoogleMapsPins]    Script Date: 13.02.2022 18:18:42 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[GoogleMapsPins](
+	[Lng] [real] NULL,
+	[Lat] [real] NULL,
+	[AddressStr] [varchar](255) NULL,
+	[Description] [varchar](255) NULL,
+	[PinName] [varchar](10) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[PinName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+USE [PAI_DB]
+GO
+
+/****** Object:  Table [dbo].[CardsTable]    Script Date: 13.02.2022 18:18:31 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[CardsTable](
+	[cardId] [varchar](20) NOT NULL,
+	[cardName] [varchar](141) NULL,
+	[cmc] [varchar](10) NULL,
+	[type] [varchar](50) NULL,
+	[subTypes] [varchar](75) NULL,
+	[powerValue] [int] NULL,
+	[toughness] [int] NULL,
+	[rarity] [varchar](11) NULL,
+	[cardText] [text] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[cardId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
